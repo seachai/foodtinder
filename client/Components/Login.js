@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useAuth } from '../Context/Auth';
 import validator from 'validator';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
@@ -43,7 +44,7 @@ export default function Login({ setHasAccount }) {
   const classes = useStyles(); // useStyles for material ui
   const history = useHistory(); // useHistory to push path upon successful login
   const emailForm = useRef(null);
-
+  const { setAuth } = useAuth();
   // hook state for form values
   const [values, setValues] = useState({
     email: '',
@@ -100,6 +101,7 @@ export default function Login({ setHasAccount }) {
       .then((res) => {
         // checks if res.id is returned from database
         if (res.id) {
+          setAuth(res.id);
           history.push({ pathname: `/setup`, state: res.id });
         } else {
           alert('Wrong login creditionals');

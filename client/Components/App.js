@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
-import { HashRouter as Router, Route, Switch } from 'react-router-dom';
+import {
+  HashRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router-dom';
 import { AuthContext } from '../Context/Auth';
 
 import HomePage from '../Pages/HomePage';
 import SetupPage from '../Pages/SetupPage';
 import LandingPage from '../Pages/LandingPage';
-import PrivateRoute from '../Pages/PrivateRoute';
 import Info from './Info';
 
 const App = () => {
@@ -13,6 +17,18 @@ const App = () => {
   const [restaurants, setRestaurants] = useState();
   const [match, setMatch] = useState();
   const [info, setInfo] = useState();
+
+  const AuthUser = ({ children, ...props }) => {
+    return (
+      <Route
+        {...props}
+        render={({ location }) => {
+          console.log(location);
+          return auth ? children : <Redirect to="/" />;
+        }}
+      />
+    );
+  };
 
   return (
     <Router>
@@ -30,10 +46,11 @@ const App = () => {
           }}
         >
           <Route exact path="/" component={LandingPage} />
-          <Route path="/homepage" component={HomePage} />
-          <Route path="/setup" component={SetupPage} />
-          <Route path="/info" component={Info} />
-          {/* <PrivateRoute path="/homepage" component={HomePage} /> */}
+          <AuthUser>
+            <Route path="/setup" component={SetupPage} />
+            <Route path="/homepage/" component={HomePage} />
+            <Route path="/info" component={Info} />
+          </AuthUser>
         </AuthContext.Provider>
       </Switch>
     </Router>
